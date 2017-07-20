@@ -217,7 +217,8 @@ static enum mmio_result gic_handle_redist_access(void *arg,
 	 * need to translate the redistributor address.
 	 */
 	for_each_cpu(cpu, cell->cpu_set) {
-		virt_id = arm_cpu_phys2virt(cpu);
+		//virt_id = arm_cpu_phys2virt(cpu);
+		virt_id = cpu;
 		offs = per_cpu(virt_id)->gicr_base - gicr_base;
 		if (mmio->address >= offs &&
 		    mmio->address < offs + redist_size) {
@@ -235,9 +236,11 @@ static enum mmio_result gic_handle_redist_access(void *arg,
 	if (!mmio->is_write) {
 		switch (mmio->address) {
 		case GICR_TYPER:
+#if 0
 			if (virt_id == cell->arch.last_virt_id)
 				mmio->value = GICR_TYPER_Last;
 			else
+#endif
 				mmio->value = 0;
 			/* AArch64 can use a writeq for this register */
 			if (mmio->size == 8)
@@ -337,7 +340,8 @@ enum mmio_result gic_handle_irq_route(struct mmio_access *mmio,
 
 	/* Translate the virtual cpu id into the physical one */
 	if (mmio->is_write) {
-		mmio->value = arm_cpu_virt2phys(cell, mmio->value);
+		//mmio->value = arm_cpu_virt2phys(cell, mmio->value);
+		mmio->value = mmio->value;
 		if (mmio->value == -1) {
 			printk("Attempt to route IRQ%d outside of cell\n", irq);
 			return MMIO_ERROR;
@@ -345,7 +349,8 @@ enum mmio_result gic_handle_irq_route(struct mmio_access *mmio,
 		mmio_perform_access(gicd_base, mmio);
 	} else {
 		cpu = mmio_read32(gicd_base + GICD_IROUTER + 8 * irq);
-		mmio->value = arm_cpu_phys2virt(cpu);
+		//mmio->value = arm_cpu_phys2virt(cpu);
+		mmio->value = cpu;
 	}
 	return MMIO_HANDLED;
 }
