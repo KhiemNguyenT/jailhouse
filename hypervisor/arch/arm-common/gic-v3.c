@@ -105,7 +105,7 @@ static int gic_cpu_init(struct per_cpu *cpu_data)
 			break;
 
 		typer = mmio_read64(redist_base + GICR_TYPER);
-		if ((typer >> 32) == cpu_data->cpu_id) {
+		if (((typer >> 8) & 0xf) == cpu_data->cpu_id) {
 			cpu_data->gicr_base = redist_base;
 			break;
 		}
