@@ -146,8 +146,7 @@ void gic_handle_sgir_write(struct sgi *sgi, bool virt_input)
 				if (cpu == cpu_data->cpu_id)
 					continue;
 			} else if (virt_input) {
-				if (!test_bit(arm_cpu_phys2virt(cpu),
-					      &targets))
+				if (!test_bit(cpu, &targets))
 					continue;
 			} else {
 				/*
